@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop All Fragrances — NeoFragrances</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container navbar">
+    <a href="index.html" class="logo">Neo<span>Fragrances</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="products.html">Categories</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="login.html" title="Login / Register"><i class="fa-regular fa-user"></i></a>
+      <a href="wishlist.html" title="Wishlist"><i class="fa-regular fa-heart"></i></a>
+      <a href="my-orders.html" title="My Orders"><i class="fa-solid fa-receipt"></i></a>
+      <a href="cart.html" title="Cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-count">0</span></a>
+      <button class="nav-toggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<section style="padding-bottom:0;">
+  <div class="container">
+    <span class="eyebrow">Shop</span>
+    <h1 class="section-title">All Fragrances</h1>
+    <p class="section-sub"><span id="results-count">0</span> fragrances found</p>
+
+    <div class="chip-row" id="brand-chips"></div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color:var(--ink-soft)"></i>
+        <input type="text" id="search-input" placeholder="Search by name or brand">
+      </div>
+      <div class="filters">
+  <select id="category-filter" class="filter-select">
+    <option value="all">All Categories</option>
+    <option value="men">Men's</option>
+    <option value="women">Women's</option>
+    <option value="unisex">Unisex</option>
+  </select>
+  
+  <select id="price-filter" class="filter-select">
+    <option value="all">Any Price</option>
+    <option value="under100">Under $100</option>
+    <option value="100to130">$100 – $130</option>
+    <option value="over130">Over $130</option>
+  </select>
+  <select id="sort-select" class="filter-select">
+    <option value="featured">Sort: Featured</option>
+    <option value="price-low">Price: Low to High</option>
+    <option value="price-high">Price: High to Low</option>
+    <option value="newest">Newest</option>
+    <option value="popular">Popular</option>
+  </select>
+</div>
+        
+      
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="container">
+    <div class="product-grid" id="product-grid"></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <a href="index.html" class="logo">Neo<span>Fragrances</span></a>
+      <p>Authentic luxury fragrances, from timeless classics to modern masterpieces.</p>
+      <div class="social-row">
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Shop</h5>
+      <a href="products.html">All Products</a>
+      <a href="products.html?category=men">Men's</a>
+      <a href="products.html?category=women">Women's</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <a href="tel:0597015869">0597 015 869</a>
+      <a href="mailto:hello@neofragrances.com">hello@neofragrances.com</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>&copy; 2026 NeoFragrances. All rights reserved.</span>
+    <span>Built for DCIT 208</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/wishlist.js"></script>
+<script src="js/search.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+  const cat = params.get("category");
+  if (cat) {
+    document.getElementById("category-filter").value = cat;
+    applyFilters();
+  }
+</script>
+</script>
+</body>
+</html>

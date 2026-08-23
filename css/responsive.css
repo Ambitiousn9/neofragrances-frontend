@@ -1,0 +1,93 @@
+/* ============================================
+   NeoFragrances — Responsive rules
+   Breakpoints: 992px (tablet), 640px (mobile)
+   ============================================ */
+
+@media (max-width: 992px) {
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
+  .category-grid { grid-template-columns: repeat(3, 1fr); }
+  .testimonial-grid { grid-template-columns: 1fr; }
+  .pd-layout { grid-template-columns: 1fr; gap: 30px; }
+  .cart-layout { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero-bottle { width: 160px; opacity: 0.5; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-toggle { display: block; }
+  .nav-icons .icon-secondary { display: none; }
+.mobile-account-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  margin-top: 6px;
+  border-top: 1px solid var(--line);
+}
+  .category-grid { grid-template-columns: 1fr; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .filters { flex-direction: column; }
+  .filters select, .search-box { width: 100%; }
+  .nav-icons .icon-secondary { display: none; }
+  .mobile-account-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 14px;
+    margin-top: 6px;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 640px) {
+  section { padding: 60px 0; }
+  .hero { min-height: 78vh; text-align: left; }
+  .hero-bottle { display: none; }
+  .why-grid { grid-template-columns: 1fr; }
+  .cart-item {
+    grid-template-columns: 70px 1fr;
+    grid-template-areas:
+      "media name"
+      "media qty"
+      "media price";
+    row-gap: 8px;
+  }
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .product-info { padding: 12px; }
+  .product-name { font-size: 15px; }
+  .product-actions { padding: 0 12px 12px; gap: 6px; }
+  .product-actions .btn { font-size: 12px; padding: 8px 10px; }
+  }
+  .cart-item-media { grid-area: media; }
+  .auth-card { padding: 24px; }
+  .auth-card h1 { font-size: 24px; }
+  .auth-card .sub { line-height: 1.6; }
+  .auth-password-wrap input { padding-right: 52px; }
+  .field-row { flex-direction: column; gap: 0; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+.trust-strip { flex-direction: column; align-items: flex-start; }
+@media (max-width: 380px) {
+  .auth-links { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+/* Mobile nav drawer (toggled via js/main.js) */
+@media (max-width: 768px) {
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+    gap: 16px;
+    z-index: 99;
+  }
+}

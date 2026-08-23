@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — NeoFragrances</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container navbar">
+    <a href="index.html" class="logo"><img src="images/logo/logo.png" alt="NeoFragrances" style="height:50px; width:auto;"></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="cart.html" title="Cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-count">0</span></a>
+      <button class="nav-toggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="auth-wrap">
+  <div class="auth-container">
+    <a href="index.html" class="auth-back-link"><i class="fa-solid fa-arrow-left"></i> Back to store</a>
+    <div class="auth-card">
+    <h1>Welcome Back</h1>
+    <p class="sub">Sign in to access your account, track orders and continue shopping.</p>
+
+    <form onsubmit="return false;">
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="auth-password-wrap">
+          <input type="password" id="password" placeholder="Enter your password" required>
+          <button type="button" class="auth-toggle-pw" id="toggle-pw" aria-label="Show password">Show</button>
+        </div>
+      </div>
+      <div class="auth-links">
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px;"><input type="checkbox" style="width:auto;"> Remember me</label>
+        <a href="forgot-password.html">Forgot password?</a>
+      </div>
+     <button type="submit" class="btn btn-primary btn-block btn-pill" style="margin-top:22px;">Sign In</button>
+    </form>
+
+    <p class="auth-switch">Don't have an account? <a href="register.html">Register</a></p>
+  </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/validation.js"></script>
+
+document.getElementById("toggle-pw").addEventListener("click", () => {
+  const input = document.getElementById("password");
+  const btn = document.getElementById("toggle-pw");
+  const isHidden = input.type === "password";
+  input.type = isHidden ? "text" : "password";
+  btn.textContent = isHidden ? "Hide" : "Show";
+  btn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+});
+</script>
+</body>
+</html>
