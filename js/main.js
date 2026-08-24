@@ -9,7 +9,7 @@
    event instead of assuming it's ready immediately.
    ============================================ */
 
-const API_BASE = "http://172.20.10.3:5000";
+const API_BASE = "https://neofragrances-server.onrender.com";
 let PRODUCTS = [];
 
 async function loadProducts() {
