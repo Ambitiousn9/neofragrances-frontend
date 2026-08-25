@@ -108,7 +108,7 @@ function renderCartPage() {
     return `
     <div class="cart-item" data-id="${p.id}">
       <div class="cart-item-media">${productMedia(p.image, p.name)}</div>
-      <div>
+      <div class="cart-item-name">
         <div class="product-brand">${p.brand}</div>
         <div class="product-name" style="font-size:16px;">${p.name}</div>
       </div>
