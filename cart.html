@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Cart  NeoFragrances</title>
+<title>Your Cart — NeoFragrances</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/cart.css">
 </head>
 <body>
 
@@ -20,7 +21,7 @@
       <li><a href="products.html">Categories</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="contact.html">Contact</a></li>
-    <li class="mobile-account-item"><a href="login.html"><i class="fa-regular fa-user"></i> &nbsp;Login / Register</a></li>
+      <li class="mobile-account-item"><a href="login.html"><i class="fa-regular fa-user"></i> &nbsp;Login / Register</a></li>
       <li class="mobile-account-item"><a href="wishlist.html"><i class="fa-regular fa-heart"></i> &nbsp;Wishlist</a></li>
       <li class="mobile-account-item"><a href="my-orders.html"><i class="fa-solid fa-receipt"></i> &nbsp;My Orders</a></li>
     </ul>
@@ -29,47 +30,89 @@
       <a href="wishlist.html" title="Wishlist" class="icon-secondary"><i class="fa-regular fa-heart"></i></a>
       <a href="my-orders.html" title="My Orders" class="icon-secondary"><i class="fa-solid fa-receipt"></i></a>
       <a href="cart.html" title="Cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-count">0</span></a>
-      <button class="nav-toggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+      <button class="nav-toggle" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
     </div>
   </div>
 </header>
 
 <section>
   <div class="container">
-    <span class="eyebrow" style="text-align:left; display:block;">Cart</span>
-<h1 class="section-title" style="text-align:left;">Your Shopping Cart</h1>
+    <div class="cart-page-header">
+      <span class="eyebrow">Cart</span>
+      <h1 class="section-title">Your Shopping Cart</h1>
+      <p class="section-sub">Review your items and proceed to checkout.</p>
+    </div>
+
     <div class="cart-layout mt-lg">
-      <div id="cart-list"></div>
+      <div id="cart-list" aria-live="polite"></div>
 
       <div>
-        <div class="cart-summary" style="margin-bottom:20px;">
-          <h3 style="margin-bottom:16px;">Shipping Address</h3>
-          <div id="address-list"></div>
-          <button class="btn btn-outline btn-sm" id="add-address-btn" style="margin-top:12px;">+ Add New Address</button>
+        <div class="section-card" id="address-section">
+          <div class="section-card-header">
+            <h3 class="section-card-title"><i class="fa-solid fa-location-dot"></i> Shipping Address</h3>
+          </div>
+          <div id="address-list" role="radiogroup" aria-label="Choose a shipping address"></div>
+          <button class="btn btn-outline btn-add-address" id="add-address-btn" type="button">
+            <i class="fa-solid fa-plus"></i>&nbsp; Add New Address
+          </button>
           <div id="address-form-wrap" class="hidden" style="margin-top:16px;"></div>
         </div>
 
-        <div class="cart-summary">
-          <h3 style="margin-bottom:20px;">Order Summary</h3>
-          <div class="field" style="margin-bottom:18px;">
-            <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:6px;">Coupon Code</label>
-            <div style="display:flex; gap:8px;">
-              <input type="text" id="coupon-input" placeholder="Enter code" style="flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:4px; text-transform:uppercase; font-family:var(--font-body);">
-              <button class="btn btn-outline btn-sm" id="apply-coupon-btn">Apply</button>
-            </div>
-            <p id="coupon-msg" style="font-size:12px; margin-top:6px;"></p>
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3 class="section-card-title"><i class="fa-solid fa-tag"></i> Have a promo code?</h3>
           </div>
-          <div class="summary-row"><span>Subtotal</span><span id="summary-subtotal">$0.00</span></div>
-          <div class="summary-row"><span>Shipping</span><span id="summary-shipping">—</span></div>
-          <div class="summary-row" id="summary-discount-row" style="display:none; color:#22733B;"><span>Discount</span><span id="summary-discount">-$0.00</span></div>
-          <div class="summary-total"><span>Total</span><span id="summary-total">$0.00</span></div>
-         <div>
-          <button class="btn btn-primary btn-block" id="checkout-btn">Checkout</button>
-          </div>   
+          <div class="promo-input-row">
+            <label for="coupon-input" class="sr-only">Promo code</label>
+            <input type="text" id="coupon-input" placeholder="Enter promo code" aria-describedby="coupon-msg">
+            <button class="btn btn-primary btn-sm" id="apply-coupon-btn" type="button">Apply</button>
+          </div>
+          <p id="coupon-msg" style="font-size:12px; margin-top:8px; min-height:16px;" aria-live="polite"></p>
+          <div id="promo-applied-wrap"></div>
         </div>
+
+        <div class="order-summary-card">
+          <h3 class="order-summary-title">Order Summary</h3>
+          <div class="summary-row-v2"><span>Subtotal</span><span id="summary-subtotal">$0.00</span></div>
+          <div class="summary-row-v2 discount" id="summary-discount-row" style="display:none;"><span id="summary-discount-label">Discount</span><span id="summary-discount">-$0.00</span></div>
+          <div class="summary-row-v2"><span>Shipping</span><span id="summary-shipping">—</span></div>
+
+          <div class="summary-total-v2">
+            <span class="label">Total</span>
+            <span class="amount" id="summary-total">$0.00</span>
+          </div>
+          <div class="summary-saved" id="summary-saved" style="display:none;"></div>
+
+          <div class="delivery-note">
+            <i class="fa-solid fa-truck-fast"></i>
+            <span>Estimated delivery: 2–4 business days, as stated at checkout.</span>
+          </div>
+
+          <button class="btn btn-primary checkout-cta" id="checkout-btn" type="button">
+            <i class="fa-solid fa-lock"></i> Proceed to Checkout
+          </button>
+
+          <div class="trust-row-cart">
+            <div class="trust-mini"><i class="fa-solid fa-shield-halved"></i><strong>Authentic</strong>Fragrances</div>
+            <div class="trust-mini"><i class="fa-solid fa-lock"></i><strong>Secure</strong>Checkout</div>
+            <div class="trust-mini"><i class="fa-solid fa-truck"></i><strong>Order</strong>Tracking</div>
+            <div class="trust-mini"><i class="fa-solid fa-credit-card"></i><strong>Secure Payment</strong>via Paystack</div>
+          </div>
+        </div>
+
+        <p class="trust-footer-line"><i class="fa-solid fa-circle-check"></i>100% authentic &nbsp;·&nbsp; Original brands &nbsp;·&nbsp; Secure shopping</p>
+      </div>
     </div>
   </div>
 </section>
+
+<div class="cart-sticky-bar" id="cart-sticky-bar">
+  <div class="sticky-total">
+    <span>Total</span>
+    <span id="sticky-total-amount" style="font-size:16px; color:var(--ink);">$0.00</span>
+  </div>
+  <button class="btn btn-primary" id="sticky-checkout-btn" type="button">Checkout</button>
+</div>
 
 <footer class="site-footer">
   <div class="container footer-grid">
@@ -77,9 +120,9 @@
       <a href="index.html" class="logo">Neo<span>Fragrances</span></a>
       <p>Authentic luxury fragrances, from timeless classics to modern masterpieces.</p>
       <div class="social-row">
-        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -106,6 +149,7 @@
     <span>We offer perfection in fragrances</span>
   </div>
 </footer>
+
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="js/main.js"></script>
 <script src="js/toast.js"></script>
