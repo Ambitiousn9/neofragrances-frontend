@@ -37,9 +37,9 @@ function renderAddressList() {
   }
 
   el.innerHTML = ADDRESSES.map(a => `
-    <label style="display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer;">
-      <input type="radio" name="selected-address" value="${a.id}" ${a.id === SELECTED_ADDRESS_ID ? "checked" : ""} style="margin-top:4px;">
-      <span style="font-size:13px; line-height:1.5;">
+   <label style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer;">
+      <input type="radio" name="selected-address" value="${a.id}" ${a.id === SELECTED_ADDRESS_ID ? "checked" : ""} style="margin-top:4px; flex-shrink:0;">
+      <span style="font-size:13px; line-height:1.5; margin-left:4px;">
         <strong>${a.label}</strong> — ${a.full_name}<br>
         ${a.address_line1}${a.address_line2 ? ", " + a.address_line2 : ""}<br>
         ${a.city}${a.region ? ", " + a.region : ""}, ${a.country}
