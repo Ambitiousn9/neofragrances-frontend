@@ -70,7 +70,17 @@
   </div>
   </div>
 </div>
-
+<script>
+document.getElementById("toggle-pw").addEventListener("click", () => {
+  const input = document.getElementById("password");
+  const btn = document.getElementById("toggle-pw");
+  const isHidden = input.type === "password";
+  input.type = isHidden ? "text" : "password";
+  btn.textContent = isHidden ? "Hide" : "Show";
+  btn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+});
+</script>
+  
 <script src="js/main.js"></script>
 <script src="js/toast.js"></script>
 <script src="js/cart.js"></script>
@@ -78,5 +88,5 @@
 <script src="js/validation.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="js/google-auth.js"></script>
-</body>
+ </body>
 </html>
