@@ -45,14 +45,20 @@
         <input type="tel" id="phone" placeholder="+233 55 000 0000" required>
       </div>
       <div class="field-row">
-        <div class="field">
-          <label for="reg-password">Password</label>
-          <input type="password" id="reg-password" placeholder="••••••••" required>
-        </div>
-        <div class="field">
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" placeholder="••••••••" required>
-        </div>
+       <div class="field">
+  <label for="reg-password">Password</label>
+  <div class="auth-password-wrap">
+    <input type="password" id="reg-password" placeholder="••••••••" required>
+    <button type="button" class="auth-toggle-pw" id="toggle-reg-pw" aria-label="Show password">Show</button>
+  </div>
+</div>
+<div class="field">
+  <label for="confirm-password">Confirm Password</label>
+  <div class="auth-password-wrap">
+    <input type="password" id="confirm-password" placeholder="••••••••" required>
+    <button type="button" class="auth-toggle-pw" id="toggle-confirm-pw" aria-label="Show password">Show</button>
+  </div>
+</div>
       </div>
      <button type="submit" class="btn btn-primary btn-block" style="margin-top:10px;">Create Account</button>
     </form>
@@ -80,5 +86,17 @@
 <script src="js/validation.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="js/google-auth.js"></script>
+
+  <script>
+["reg-password", "confirm-password"].forEach(fieldId => {
+  const btn = document.getElementById(`toggle-${fieldId === "reg-password" ? "reg-pw" : "confirm-pw"}`);
+  const input = document.getElementById(fieldId);
+  btn?.addEventListener("click", () => {
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    btn.textContent = isHidden ? "Hide" : "Show";
+  });
+});
+</script>
 </body>
 </html>
