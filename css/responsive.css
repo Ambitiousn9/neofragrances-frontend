@@ -41,6 +41,8 @@
 }
 
 @media (max-width: 640px) {
+   .container { padding: 0 20px; }
+.nav-icons { gap: 14px; }
   section { padding: 60px 0; }
   .hero { min-height: 78vh; text-align: left; }
   .hero-bottle { display: none; }
