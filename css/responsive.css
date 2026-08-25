@@ -47,14 +47,20 @@
   .hero { min-height: 78vh; text-align: left; }
   .hero-bottle { display: none; }
   .why-grid { grid-template-columns: 1fr; }
-  .cart-item {
-    grid-template-columns: 70px 1fr;
+ .cart-item {
+    grid-template-columns: 64px 1fr auto;
     grid-template-areas:
-      "media name"
-      "media qty"
-      "media price";
+      "media name name"
+      "media qty remove"
+      "media price price";
     row-gap: 8px;
+    align-items: center;
   }
+  .cart-item-media { grid-area: media; }
+  .cart-item-name { grid-area: name; }
+  .cart-item .qty-control { grid-area: qty; justify-self: start; }
+  .cart-item .remove-link { grid-area: remove; justify-self: end; }
+  .cart-item .product-price { grid-area: price; }
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
@@ -64,8 +70,7 @@
   .product-actions { padding: 0 12px 12px; gap: 6px; }
   .product-actions .btn { font-size: 12px; padding: 8px 10px; }
   }
-  .cart-item-media { grid-area: media; }
-  .auth-card { padding: 24px; }
+    .auth-card { padding: 24px; }
   .auth-card h1 { font-size: 24px; }
   .auth-card .sub { line-height: 1.6; }
   .auth-password-wrap input { padding-right: 52px; }
