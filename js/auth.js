@@ -1,5 +1,5 @@
 /* ============================================
-   NeoFragrances — auth.js (Phase 4)
+   NeoFragrances — auth.js (Phase 4 + email verification)
    Handles real Register/Login against the API,
    and stores the returned token + user info so
    the site can tell if someone is logged in.
@@ -30,6 +30,15 @@ function isLoggedIn() {
   return !!getAuth()?.token;
 }
 
+/**
+ * Registers a new account. Since accounts now require email verification
+ * before they can log in, the server does NOT return a token here — it
+ * returns { requiresVerification: true, message }. This function does
+ * NOT call saveAuth() anymore; the caller (validation.js) is responsible
+ * for showing the "check your email" message and redirecting to login.
+ *
+ * Returns: { requiresVerification: true, message, email }
+ */
 async function registerUser({ fullName, email, phone, password }) {
   const res = await fetch(`${API_BASE}/api/register`, {
     method: "POST",
@@ -38,10 +47,22 @@ async function registerUser({ fullName, email, phone, password }) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Registration failed.");
-  saveAuth(data.token, data.user);
-  return data.user;
+
+  // No token on registration anymore — verification is required first.
+  return {
+    requiresVerification: true,
+    message: data.message || "Please check your email to verify your address before logging in.",
+    email,
+  };
 }
 
+/**
+ * Logs a user in. If the account exists but hasn't verified its email yet,
+ * the server responds 403 with { error, requiresVerification: true }.
+ * We surface that on the thrown Error (err.requiresVerification / err.email)
+ * so the UI can offer a "resend verification email" action instead of a
+ * generic "wrong password" message.
+ */
 async function loginUser({ email, password }) {
   const res = await fetch(`${API_BASE}/api/login`, {
     method: "POST",
@@ -49,9 +70,34 @@ async function loginUser({ email, password }) {
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Login failed.");
+
+  if (!res.ok) {
+    const err = new Error(data.error || "Login failed.");
+    if (data.requiresVerification) {
+      err.requiresVerification = true;
+      err.email = email;
+    }
+    throw err;
+  }
+
   saveAuth(data.token, data.user);
   return data.user;
+}
+
+/**
+ * Asks the server to send a fresh verification link. The server always
+ * responds with the same generic message (whether or not the account
+ * exists / is already verified), so we just surface that message as-is.
+ */
+async function resendVerificationEmail(email) {
+  const res = await fetch(`${API_BASE}/api/resend-verification`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not resend verification email.");
+  return data.message || "If that email needs verifying, we've sent a new verification link.";
 }
 
 function logoutUser() {
