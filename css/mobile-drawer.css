@@ -1,0 +1,198 @@
+/* ============================================
+   NeoFragrances — mobile-drawer.css
+   Slide-in mobile navigation drawer.
+   Active only at <=768px (drawer + overlay are
+   hidden entirely above that, matching the
+   existing .nav-toggle visibility breakpoint).
+   ============================================ */
+
+.mnav-overlay,
+.mnav-drawer { display: none; }
+
+body.mnav-lock-scroll { overflow: hidden; }
+
+@media (max-width: 768px) {
+  .mnav-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(43,27,46,0.55);
+    z-index: 400;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .mnav-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .mnav-drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 68%;
+    max-width: 320px;
+    background: var(--bg);
+    z-index: 401;
+    transform: translateX(-100%);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    box-shadow: 8px 0 24px rgba(0,0,0,0.15);
+  }
+  .mnav-drawer.open { transform: translateX(0); }
+
+  .mnav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .mnav-close {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--ink-soft);
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .mnav-close:hover { color: var(--wine); border-color: var(--wine); }
+
+  /* ---------- Profile card ---------- */
+  .mnav-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 16px 4px;
+    padding: 14px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .mnav-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--wine);
+    color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .mnav-guest .mnav-avatar { background: var(--line); color: var(--ink-soft); font-size: 16px; }
+  .mnav-profile-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .mnav-profile-info strong { font-size: 15px; color: var(--ink); }
+  .mnav-profile-info span { font-size: 12.5px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mnav-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #8a6a3f;
+    background: rgba(184,147,95,0.18);
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: fit-content;
+  }
+  .mnav-profile-card > i.fa-chevron-right { color: var(--ink-soft); font-size: 13px; flex-shrink: 0; }
+
+  /* ---------- Nav sections ---------- */
+  .mnav-nav { padding: 8px 10px 4px; flex: 1; }
+  .mnav-section { margin-bottom: 6px; }
+  .mnav-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 16px 10px 6px;
+  }
+  .mnav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px 10px;
+    border-radius: 10px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .mnav-link i { width: 20px; text-align: center; color: var(--ink-soft); font-size: 15px; flex-shrink: 0; }
+  .mnav-link:hover, .mnav-link.active {
+    background: rgba(201,141,160,0.14);
+  }
+  .mnav-link.active { font-weight: 700; }
+  .mnav-link.active i { color: var(--wine); }
+
+  .mnav-badge-new {
+    margin-left: auto;
+    background: var(--wine);
+    color: var(--white);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .mnav-badge-count {
+    margin-left: auto;
+    background: var(--wine);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+  }
+
+  .mnav-logout {
+    color: var(--wine);
+    margin-top: 4px;
+  }
+  .mnav-logout i { color: var(--wine); }
+  .mnav-logout:hover { background: rgba(107,39,55,0.08); }
+
+  /* ---------- Trust footer ---------- */
+  .mnav-trust {
+    margin: 14px 12px 20px;
+    padding: 14px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .mnav-trust-item { display: flex; align-items: flex-start; gap: 8px; }
+  .mnav-trust-item i { color: var(--gold); font-size: 14px; margin-top: 2px; flex-shrink: 0; }
+  .mnav-trust-item strong { display: block; font-size: 12px; color: var(--ink); }
+  .mnav-trust-item span { display: block; font-size: 10.5px; color: var(--ink-soft); }
+
+  /* Focus states for accessibility */
+  .mnav-link:focus-visible,
+  .mnav-close:focus-visible,
+  .mnav-profile-card:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+}
