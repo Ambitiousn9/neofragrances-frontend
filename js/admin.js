@@ -18,7 +18,8 @@ const STATUS_LIST = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled
 function statusBadgeClass(status) {
   return `badge-status badge-${status.toLowerCase()}`;
 }
-function money(n) { return `$${Number(n).toFixed(2)}`; }
+function money(n) { return `GH₵${Number(n).toFixed(2)}`; }
+
 
 function thumbHTML(p) {
   if (!p) return `<div class="thumb">${bottleSVG()}</div>`;
