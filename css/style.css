@@ -428,7 +428,7 @@ section { padding: 90px 0; }
 .product-brand { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
 .product-name { font-family: var(--font-display); font-size: 19px; margin-bottom: 2px; }
 .product-cat { font-size: 12px; color: var(--ink-soft); margin-bottom: 8px; }
-.product-price-row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.product-price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
 .product-price { font-weight: 700; font-size: 17px; }
 .stock-yes, .stock-no {
   display: inline-flex;
@@ -437,15 +437,17 @@ section { padding: 90px 0; }
   font-size: 12px;
   font-weight: 600;
 }
-.stock-yes { color: #3E7D4F; }
-.stock-no { color: var(--wine); }
-.stock-yes::before, .stock-no::before {
-  content: "";
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
+.stock-yes, .stock-no {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
   flex-shrink: 0;
 }
+
+
 .product-actions { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px 18px; }
 .product-actions .add-to-cart { width: 100%; }
 .view-details-link {
