@@ -4,22 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Product Details — NeoFragrances</title>
-<meta name="description" content="Explore this fragrance's notes, concentration, and reviews at NeoFragrances.">
-<link rel="icon" href="images/logo/logo.png" type="image/png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/responsive.css">
-<link rel="stylesheet" href="css/mobile-drawer.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="container navbar">
-    <a href="index.html" class="logo"><img src="images/logo/logo.png" alt="NeoFragrances" style="height:50px; width:auto;"></a>
+    <a href="index.html" class="logo">Neo<span>Fragrances</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="products.html">Products</a></li>
+      <li><a href="products.html">Categories</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="contact.html">Contact</a></li>
     <li class="mobile-account-item"><a href="login.html"><i class="fa-regular fa-user"></i> &nbsp;Login / Register</a></li>
@@ -59,9 +57,9 @@
       <a href="index.html" class="logo">Neo<span>Fragrances</span></a>
       <p>Authentic luxury fragrances, from timeless classics to modern masterpieces.</p>
       <div class="social-row">
-        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -80,7 +78,7 @@
     <div class="footer-col">
       <h5>Contact</h5>
       <a href="tel:0597015869">0597 015 869</a>
-      <a href="mailto:hello@neofragrances.com">hello@neofragrances.com</a>
+      <a href="mailto:hello@neofragrances.com">Somuahdenix@gmail.com</a>
     </div>
   </div>
   <div class="container footer-bottom">
@@ -95,7 +93,6 @@
 <script src="js/auth.js"></script>
 <script src="js/wishlist.js"></script>
 <script src="js/reviews.js"></script>
-<script src="js/mobile-drawer.js"></script>
 <script>
 document.getElementById("pd-content").innerHTML =
   `<p style="grid-column:1/-1; color:var(--ink-soft); padding:40px 0;">Loading product...</p>`;
@@ -103,7 +100,7 @@ document.getElementById("pd-content").innerHTML =
 document.addEventListener("productsReady", (e) => {
   if (!e.detail.success || PRODUCTS.length === 0) {
     document.getElementById("pd-content").innerHTML =
-      `<p style="grid-column:1/-1; color:var(--wine); padding:40px 0;">We're having trouble loading this product right now — please try refreshing in a moment.</p>`;
+      `<p style="grid-column:1/-1; color:var(--wine); padding:40px 0;">Couldn't load this product — make sure the backend server (node server.js) is running.</p>`;
     return;
   }
 
@@ -141,7 +138,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
       </div>
 
       <div class="pd-price-stock-row">
-        <div class="pd-price">${money(p.price)}</div>
+        <div class="pd-price">$${p.price.toFixed(2)}</div>
         <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In Stock' : 'Out of Stock'}</span>
       </div>
 
@@ -201,7 +198,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
     });
   });
 
-  document.getElementById("sticky-price").textContent = money(p.price);
+  document.getElementById("sticky-price").textContent = `$${p.price.toFixed(2)}`;
   document.getElementById("sticky-add-cart").disabled = !p.stock;
   document.getElementById("sticky-add-cart").addEventListener("click", () => {
     addToCart(p.id, qty);
