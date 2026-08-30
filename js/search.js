@@ -1,10 +1,14 @@
-
 /* ============================================
-   NeoFragrances — search.js (Phase 4)
+   NeoFragrances — search.js (Phase 4, patched)
    Client-side search/filter/sort for products.html.
    Waits for "productsReady" (fired by main.js once
    the API fetch finishes) before rendering anything,
    since PRODUCTS is empty until then.
+
+   PATCH: distinguishes "the API call failed" from
+   "the API call worked but returned zero products"
+   — these used to show the identical dev-facing
+   error message to real visitors.
    ============================================ */
 
 let selectedBrand = "all";
@@ -111,7 +115,12 @@ document.addEventListener("productsReady", (e) => {
   if (!document.getElementById("product-grid")) return;
   if (!e.detail.success) {
     document.getElementById("product-grid").innerHTML =
-      `<p style="grid-column:1/-1; color:var(--wine); padding:40px 0;">Couldn't load products — make sure the backend server (node server.js) is running.</p>`;
+      `<p style="grid-column:1/-1; color:var(--wine); padding:40px 0;">We're having trouble loading our collection right now — please try refreshing in a moment.</p>`;
+    return;
+  }
+  if (e.detail.empty) {
+    document.getElementById("product-grid").innerHTML =
+      `<p style="grid-column:1/-1; color:var(--ink-soft); padding:40px 0;">No fragrances are listed yet — check back soon.</p>`;
     return;
   }
   initProductsPage();
