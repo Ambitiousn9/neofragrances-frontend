@@ -1,37 +1,25 @@
 /* ============================================
-   NeoFragrances — main.js (Phase 4, patched)
-   Products load from the real database via the
-   Express API instead of being hardcoded.
+   NeoFragrances — main.js (Phase 4)
+   Products now load from the real database via
+   the Express API, instead of being hardcoded.
 
    IMPORTANT: PRODUCTS starts EMPTY and fills in
    after the fetch below finishes. Any script that
    needs PRODUCTS must wait for the "productsReady"
    event instead of assuming it's ready immediately.
-
-   PATCH NOTES (see accompanying summary):
-   - productsReady now reports success/empty
-     separately, so a genuinely empty catalog no
-     longer shows a "backend not running" message.
-   - Removed the old ".nav-links.open" toggle —
-     js/mobile-drawer.js now owns the hamburger
-     button exclusively. Having both listeners bound
-     to the same button was firing two nav systems
-     at once on every tap.
-   - Prices now render as GH₵ instead of $, matching
-     the Paystack integration in server.js which
-     charges in pesewas (Ghana Cedis subunit).
    ============================================ */
 
 const API_BASE = "https://neofragrances-server.onrender.com";
 let PRODUCTS = [];
 
 async function loadProducts() {
-  let fetchSucceeded = false;
   try {
     const res = await fetch(`${API_BASE}/api/products`);
     if (!res.ok) throw new Error(`Server responded with ${res.status}`);
     const data = await res.json();
 
+    // Convert the database's column names/shapes into the same shape
+    // the rest of the site's code already expects.
     PRODUCTS = data.map(p => ({
       id: p.id,
       name: p.name,
@@ -46,22 +34,12 @@ async function loadProducts() {
       reviewCount: p.review_count || 0,
       notes: { top: p.top_notes, middle: p.middle_notes, base: p.base_notes },
     }));
-    fetchSucceeded = true;
   } catch (err) {
     console.error("Could not load products from the API:", err);
     PRODUCTS = [];
   }
-  // Let every other script know whether the fetch itself worked, and
-  // separately, whether the (successfully fetched) catalog is empty.
-  // These used to be conflated into one "success" flag, which meant a
-  // genuinely empty catalog showed the same scary "backend not running"
-  // message as an actual outage.
-  document.dispatchEvent(new CustomEvent("productsReady", {
-    detail: {
-      success: fetchSucceeded,
-      empty: fetchSucceeded && PRODUCTS.length === 0,
-    }
-  }));
+  // Let every other script know the data has arrived (or failed).
+  document.dispatchEvent(new CustomEvent("productsReady", { detail: { success: PRODUCTS.length > 0 } }));
 }
 
 /* Reusable bottle silhouette placeholder — shown if a photo file is missing */
@@ -84,14 +62,6 @@ function handleImageError(img) {
   img.replaceWith(wrapper.firstElementChild);
 }
 
-/* Currency formatter — centralized so every price on the site stays in
-   sync with what Paystack actually charges (Ghana Cedis / pesewas).
-   admin.js, cart.js, my-orders.js all call this same function rather
-   than each hardcoding their own "$" template literal. */
-function money(amount) {
-  return `GH₵${Number(amount).toFixed(2)}`;
-}
-
 function productCard(p) {
   return `
   <div class="product-card" data-id="${p.id}" data-name="${p.name.toLowerCase()}" data-brand="${p.brand}" data-cat="${p.category}" data-price="${p.price}">
@@ -105,7 +75,7 @@ function productCard(p) {
       <h3 class="product-name">${p.name}</h3>
       <span class="product-cat">${capitalize(p.category)}</span>
       <div class="product-price-row">
-        <span class="product-price">${money(p.price)}</span>
+        <span class="product-price">$${p.price}</span>
         <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In stock' : 'Out of stock'}</span>
       </div>
     </div>
@@ -130,15 +100,14 @@ function skeletonGrid(count = 8) {
   }
   return html;
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
 
-  // NOTE: the old ".nav-links.open" hamburger toggle that used to live
-  // here has been removed on purpose. js/mobile-drawer.js binds its own
-  // click handler to the same ".nav-toggle" button; leaving both wired
-  // up meant a single tap opened the new slide-in drawer AND toggled
-  // the old flyout menu underneath it at the same time.
+  const toggle = document.querySelector(".nav-toggle");
+  const links = document.querySelector(".nav-links");
+  if (toggle && links) {
+    toggle.addEventListener("click", () => links.classList.toggle("open"));
+  }
 
   if (window.AOS) {
     AOS.init({ duration: 700, once: true, offset: 60 });
