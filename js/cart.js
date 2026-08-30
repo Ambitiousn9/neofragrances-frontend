@@ -1,9 +1,13 @@
 /* ============================================
-   NeoFragrances — cart.js (redesigned cart UI)
+   NeoFragrances — cart.js (redesigned cart UI, patched)
    Cart items still live in localStorage (same as
    before — real per-account carts remain a future
    phase). Product details come from PRODUCTS,
    populated after "productsReady" fires.
+
+   PATCH: all prices now render via money() from
+   main.js (GH₵), matching what Paystack actually
+   charges. Was previously hardcoded to "$".
 
    All existing endpoints/behavior preserved:
    - /api/coupons/validate
@@ -129,7 +133,7 @@ function cartItemCardHTML(p, item) {
     <div class="cart-item-info">
       <span class="product-brand">${p.brand}</span>
       <div class="product-name">${p.name}</div>
-      <div class="product-price">$${(p.price * item.qty).toFixed(2)}</div>
+      <div class="product-price">${money(p.price * item.qty)}</div>
     </div>
     <div class="cart-item-qty">
       <div class="qty-control-v2">
@@ -238,25 +242,25 @@ function renderSummary(subtotal) {
     discount = Math.min(discount, subtotal);
   }
 
-  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById("summary-shipping").textContent = shipping ? `$${shipping.toFixed(2)}` : "—";
+  subtotalEl.textContent = money(subtotal);
+  document.getElementById("summary-shipping").textContent = shipping ? money(shipping) : "—";
 
   const discountRow = document.getElementById("summary-discount-row");
   const discountLabel = document.getElementById("summary-discount-label");
   if (discountRow) {
     discountRow.style.display = discount > 0 ? "flex" : "none";
-    document.getElementById("summary-discount").textContent = `-$${discount.toFixed(2)}`;
+    document.getElementById("summary-discount").textContent = `-${money(discount)}`;
     if (discountLabel && APPLIED_COUPON) discountLabel.textContent = `Discount (${APPLIED_COUPON.code})`;
   }
 
   const finalTotal = subtotal + shipping - discount;
-  totalEl.textContent = `$${finalTotal.toFixed(2)}`;
+  totalEl.textContent = money(finalTotal);
 
   const savedEl = document.getElementById("summary-saved");
   if (savedEl) {
     if (discount > 0) {
       savedEl.style.display = "block";
-      savedEl.textContent = `You saved $${discount.toFixed(2)}`;
+      savedEl.textContent = `You saved ${money(discount)}`;
     } else {
       savedEl.style.display = "none";
     }
@@ -264,7 +268,7 @@ function renderSummary(subtotal) {
 
   const stickyAmount = document.getElementById("sticky-total-amount");
   const stickyBar = document.getElementById("cart-sticky-bar");
-  if (stickyAmount) stickyAmount.textContent = `$${finalTotal.toFixed(2)}`;
+  if (stickyAmount) stickyAmount.textContent = money(finalTotal);
   if (stickyBar) stickyBar.style.display = subtotal > 0 ? "" : "none";
 }
 
@@ -331,7 +335,7 @@ document.addEventListener("productsReady", (e) => {
   if (!document.getElementById("cart-list")) return;
   if (!e.detail.success) {
     document.getElementById("cart-list").innerHTML =
-      `<p style="color:var(--wine); padding:40px 0;">Couldn't load your cart — make sure the backend server is running.</p>`;
+      `<p style="color:var(--wine); padding:40px 0;">We're having trouble loading your cart right now — please try refreshing in a moment.</p>`;
     return;
   }
   renderCartPage();
