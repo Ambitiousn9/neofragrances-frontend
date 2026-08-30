@@ -138,7 +138,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
       </div>
 
       <div class="pd-price-stock-row">
-        <div class="pd-price">$${p.price.toFixed(2)}</div>
+                <div class="pd-price">${money(p.price)}</div>
         <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In Stock' : 'Out of Stock'}</span>
       </div>
 
@@ -198,7 +198,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
     });
   });
 
-  document.getElementById("sticky-price").textContent = `$${p.price.toFixed(2)}`;
+    document.getElementById("sticky-price").textContent = money(p.price);
   document.getElementById("sticky-add-cart").disabled = !p.stock;
   document.getElementById("sticky-add-cart").addEventListener("click", () => {
     addToCart(p.id, qty);
