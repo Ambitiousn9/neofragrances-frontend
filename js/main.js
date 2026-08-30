@@ -62,6 +62,12 @@ function handleImageError(img) {
   img.replaceWith(wrapper.firstElementChild);
 }
 
+
+function money(amount) {
+  return `GH₵${Number(amount).toFixed(2)}`;
+}
+
+
 function productCard(p) {
   return `
   <div class="product-card" data-id="${p.id}" data-name="${p.name.toLowerCase()}" data-brand="${p.brand}" data-cat="${p.category}" data-price="${p.price}">
@@ -75,7 +81,7 @@ function productCard(p) {
       <h3 class="product-name">${p.name}</h3>
       <span class="product-cat">${capitalize(p.category)}</span>
       <div class="product-price-row">
-        <span class="product-price">$${p.price}</span>
+                <span class="product-price">${money(p.price)}</span>
         <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In stock' : 'Out of stock'}</span>
       </div>
     </div>
@@ -103,11 +109,6 @@ function skeletonGrid(count = 8) {
 document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
 
-  const toggle = document.querySelector(".nav-toggle");
-  const links = document.querySelector(".nav-links");
-  if (toggle && links) {
-    toggle.addEventListener("click", () => links.classList.toggle("open"));
-  }
 
   if (window.AOS) {
     AOS.init({ duration: 700, once: true, offset: 60 });
