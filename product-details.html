@@ -153,7 +153,9 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
 
       <div class="pd-cta-row">
         <button class="btn btn-primary pd-add-to-cart-btn" id="pd-add-cart" ${p.stock ? "" : "disabled"}><i class="fa-solid fa-bag-shopping"></i>&nbsp; Add to Cart</button>
-        <button class="wishlist-btn pd-wishlist-btn" data-id="${p.id}" onclick="toggleWishlist(${p.id}, this)" title="Save to wishlist"><i class="fa-regular fa-heart"></i></button>
+                <button class="wishlist-btn pd-wishlist-btn" data-id="${p.id}" onclick="toggleWishlist(${p.id}, this)" title="Save to wishlist"><i class="fa-regular fa-heart"></i></button>
+        <button class="wishlist-btn pd-wishlist-btn" id="pd-share-btn" title="Share this fragrance"><i class="fa-solid fa-share-nodes"></i></button>
+
       </div>
 
       <div class="pd-trust-row">
@@ -221,12 +223,31 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
   document.getElementById("qty-minus").addEventListener("click", () => {
     qty = Math.max(1, qty - 1); document.getElementById("qty-value").textContent = qty;
   });
-  document.getElementById("pd-add-cart").addEventListener("click", (e) => {
+    document.getElementById("pd-add-cart").addEventListener("click", (e) => {
   addToCart(p.id, qty);
   e.target.textContent = "Added ✓";
   setTimeout(() => (e.target.innerHTML = `<i class="fa-solid fa-bag-shopping"></i>&nbsp; Add to Cart`), 1200);
   if (typeof showToast === "function") showToast("Added to cart");
 });
+
+  document.getElementById("pd-share-btn").addEventListener("click", async () => {
+    const shareData = {
+      title: `${p.name} — NeoFragrances`,
+      text: `Check out ${p.name} by ${p.brand} on NeoFragrances`,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch (err) { /* user cancelled — no action needed */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (typeof showToast === "function") showToast("Link copied to clipboard");
+      } catch (err) {
+        if (typeof showToast === "function") showToast("Couldn't copy link", "error");
+      }
+    }
+  });
+
 
   const related = PRODUCTS.filter(pr => pr.category === p.category && pr.id !== p.id).slice(0, 4);
   document.getElementById("related-grid").innerHTML = related.map(productCard).join("");
