@@ -748,9 +748,35 @@ select:focus, .filter-select:focus {
 }
 .cart-item-media svg { width: 50%; }
 .cart-item-media img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); }
-.qty-control { display: flex; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); }
-.qty-control button { background: none; border: none; width: 30px; height: 30px; cursor: pointer; font-size: 15px; }
-.qty-control span { width: 30px; text-align: center; font-size: 14px; }
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.qty-control button {
+  background: var(--bg);
+  border: none;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.qty-control button:hover { background: var(--line); }
+.qty-control span {
+  width: 44px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .remove-link { color: var(--wine); font-size: 13px; cursor: pointer; background: none; border: none; text-decoration: underline; }
 .cart-summary {
   background: var(--white);
