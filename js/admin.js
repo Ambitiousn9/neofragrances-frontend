@@ -19,7 +19,51 @@ function statusBadgeClass(status) {
   return `badge-status badge-${status.toLowerCase()}`;
 }
 function money(n) { return `GH₵${Number(n).toFixed(2)}`; }
+function waLink(phone) {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, "");
+  const local = digits.startsWith("233") ? digits : "233" + digits.replace(/^0/, "");
+  return `https://wa.me/${local}`;
+}
 
+function openOrderAddressModal(orderId) {
+  const o = ORDERS.find(ord => ord.id === orderId);
+  if (!o) return;
+
+  let overlay = document.getElementById("order-address-modal-overlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.id = "order-address-modal-overlay";
+    overlay.innerHTML = `<div class="modal" style="max-width:420px;"><button class="modal-close" id="order-address-modal-close"><i class="fa-solid fa-xmark"></i></button><div id="order-address-modal-body"></div></div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.classList.remove("open"); });
+    document.getElementById("order-address-modal-close").addEventListener("click", () => overlay.classList.remove("open"));
+  }
+
+  const hasAddress = !!o.address_line1;
+  const name = o.delivery_name || o.customer_name;
+  const phone = o.delivery_phone || o.customer_phone;
+  const wa = waLink(phone);
+
+  document.getElementById("order-address-modal-body").innerHTML = `
+    <h3>Order #${o.id} — Delivery Details</h3>
+    <div style="font-size:14px; line-height:1.8; color:var(--ink);">
+      <p><strong>${name}</strong></p>
+      ${phone ? `<p>${phone}
+        <a href="tel:${phone}" style="margin-left:8px; color:var(--wine); font-weight:600;">Call</a>
+        ${wa ? `<a href="${wa}" target="_blank" rel="noopener" style="margin-left:8px; color:#22733B; font-weight:600;">WhatsApp</a>` : ""}
+      </p>` : `<p style="color:var(--ink-soft);">No phone number on file.</p>`}
+      <p>${o.customer_email}</p>
+      <hr style="border:none; border-top:1px solid var(--line); margin:14px 0;">
+      ${hasAddress ? `
+        <p>${o.address_line1}${o.address_line2 ? ", " + o.address_line2 : ""}</p>
+        <p>${o.city}${o.region ? ", " + o.region : ""}, ${o.country}</p>
+      ` : `<p style="color:var(--ink-soft);">No delivery address on file for this order.</p>`}
+    </div>
+  `;
+  overlay.classList.add("open");
+}
 
 function thumbHTML(p) {
   if (!p) return `<div class="thumb">${bottleSVG()}</div>`;
@@ -377,12 +421,16 @@ function renderOrdersTable() {
       <td>${o.item_count} item${o.item_count != 1 ? "s" : ""}</td>
       <td>${money(o.total)}</td>
       <td>
+        <button class="icon-btn" title="View delivery address & contact" onclick="openOrderAddressModal(${o.id})"><i class="fa-solid fa-location-dot"></i></button>
+      </td>
+      <td>
         <select class="status-select" onchange="changeOrderStatus(${o.id}, this.value)">
           ${STATUS_LIST.map(s => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
         </select>
       </td>
+      <td>${c.email}${c.phone ? `<div style="font-size:12px; color:var(--ink-soft);">${c.phone}</div>` : ""}</td>
     </tr>
-  `).join("") : `<tr><td colspan="6"><div class="admin-empty">No orders with this status.</div></td></tr>`;
+  `).join("") : `<tr><td colspan="7"><div class="admin-empty">No orders with this status.</div></td></tr>`;
 }
 
 async function changeOrderStatus(orderId, newStatus) {
