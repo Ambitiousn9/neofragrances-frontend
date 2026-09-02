@@ -19,6 +19,7 @@ function statusBadgeClass(status) {
   return `badge-status badge-${status.toLowerCase()}`;
 }
 function money(n) { return `GH₵${Number(n).toFixed(2)}`; }
+
 function waLink(phone) {
   if (!phone) return null;
   const digits = phone.replace(/\D/g, "");
@@ -26,6 +27,9 @@ function waLink(phone) {
   return `https://wa.me/${local}`;
 }
 
+// Shows a small modal with the delivery name/phone/address for one order,
+// plus Call and WhatsApp shortcuts. Falls back to the customer's account
+// email/phone when the order has no saved delivery address attached.
 function openOrderAddressModal(orderId) {
   const o = ORDERS.find(ord => ord.id === orderId);
   if (!o) return;
@@ -143,9 +147,17 @@ function exportProductsCSV() {
   if (typeof showToast === "function") showToast("Products exported");
 }
 
+// Includes delivery name/phone/address now, so an exported CSV is enough
+// on its own to fulfil orders without opening the dashboard.
 function exportOrdersCSV() {
-  const header = ["Order ID", "Customer", "Email", "Date", "Items", "Total", "Status"];
-  const rows = [header, ...ORDERS.map(o => [o.id, o.customer_name, o.customer_email, new Date(o.created_at).toLocaleDateString(), o.item_count, o.total, o.status])];
+  const header = ["Order ID", "Customer", "Email", "Phone", "Delivery Address", "Date", "Items", "Total", "Status"];
+  const rows = [header, ...ORDERS.map(o => {
+    const phone = o.delivery_phone || o.customer_phone || "";
+    const address = o.address_line1
+      ? `${o.address_line1}${o.address_line2 ? ", " + o.address_line2 : ""}, ${o.city}${o.region ? ", " + o.region : ""}, ${o.country}`
+      : "";
+    return [o.id, o.customer_name, o.customer_email, phone, address, new Date(o.created_at).toLocaleDateString(), o.item_count, o.total, o.status];
+  })];
   downloadCSV("neofragrances-orders.csv", rows);
   if (typeof showToast === "function") showToast("Orders exported");
 }
@@ -428,7 +440,6 @@ function renderOrdersTable() {
           ${STATUS_LIST.map(s => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
         </select>
       </td>
-      <td>${c.email}${c.phone ? `<div style="font-size:12px; color:var(--ink-soft);">${c.phone}</div>` : ""}</td>
     </tr>
   `).join("") : `<tr><td colspan="7"><div class="admin-empty">No orders with this status.</div></td></tr>`;
 }
@@ -463,10 +474,11 @@ function renderCustomersTable() {
     <tr>
       <td><strong>${c.full_name}</strong></td>
       <td>${c.email}</td>
+      <td>${c.phone ? `${c.phone} <a href="tel:${c.phone}" style="margin-left:6px; color:var(--wine); font-weight:600;">Call</a>` : `<span style="color:var(--ink-soft);">—</span>`}</td>
       <td>${c.order_count}</td>
       <td>${new Date(c.created_at).toLocaleDateString()}</td>
     </tr>
-  `).join("") : `<tr><td colspan="4"><div class="admin-empty">No customers match your search.</div></td></tr>`;
+  `).join("") : `<tr><td colspan="5"><div class="admin-empty">No customers match your search.</div></td></tr>`;
 }
 
 /* =========================================================
