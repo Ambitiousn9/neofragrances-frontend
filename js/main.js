@@ -32,6 +32,7 @@ async function loadProducts() {
       image: p.image,
       avgRating: Number(p.avg_rating) || 0,
       reviewCount: p.review_count || 0,
+      description: p.description || "",
       notes: { top: p.top_notes, middle: p.middle_notes, base: p.base_notes },
     }));
   } catch (err) {
