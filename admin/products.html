@@ -105,6 +105,29 @@
         <label>Image Path</label>
         <input type="text" name="pimage" placeholder="images/perfumes/your-file.jpg">
       </div>
+
+      <div class="field">
+        <label>Product Description</label>
+        <textarea name="pdescription" rows="3" placeholder="Write your own description of this fragrance — how it smells, who it's for, what makes it special. Leave blank to use an auto-generated description instead."></textarea>
+      </div>
+
+      <!-- Fragrance notes — these feed the auto-generated description
+           and the "Fragrance Notes" tab on the product page. Leaving
+           these blank is what was producing the "—" placeholders
+           customers were seeing. -->
+      <div class="field">
+        <label>Top Notes</label>
+        <input type="text" name="ptopnotes" placeholder="e.g. Bergamot, Pink Pepper, Blackcurrant">
+      </div>
+      <div class="field">
+        <label>Heart Notes</label>
+        <input type="text" name="pmiddlenotes" placeholder="e.g. Jasmine, Pineapple, Rose">
+      </div>
+      <div class="field">
+        <label>Base Notes</label>
+        <input type="text" name="pbasenotes" placeholder="e.g. Vanilla, Musk, Sandalwood">
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
         <button type="submit" class="btn btn-primary">Save Product</button>
