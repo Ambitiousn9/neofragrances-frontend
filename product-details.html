@@ -115,6 +115,17 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
   const size = sizeMatch ? `${sizeMatch[1]}ml` : null;
   const hasRating = p.reviewCount > 0;
 
+  // Prefer the admin's own written description. If it's blank, fall back
+  // to the auto-generated one built from notes; if notes are also
+  // missing/placeholder, fall back to a generic line.
+  const notesComplete = p.notes && p.notes.top && p.notes.middle && p.notes.base
+    && p.notes.top !== "—" && p.notes.middle !== "—" && p.notes.base !== "—";
+  const pdDescription = p.description && p.description.trim()
+    ? p.description
+    : notesComplete
+      ? `A ${p.category} fragrance built around ${p.notes.middle.toLowerCase()}, opening with ${p.notes.top.toLowerCase()} and settling into a warm base of ${p.notes.base.toLowerCase()}. Long-lasting and instantly recognizable.`
+      : `A distinctive ${p.category} fragrance from ${p.brand}, crafted for lasting impact and everyday sophistication.`;
+
   document.getElementById("pd-breadcrumb").innerHTML =
     `<a href="index.html" style="color:var(--ink-soft); text-decoration:none;">Home</a> &nbsp;›&nbsp;
      <span style="text-transform:capitalize;">${p.category}</span> &nbsp;›&nbsp;
@@ -142,7 +153,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
         <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In Stock' : 'Out of Stock'}</span>
       </div>
 
-      <p class="pd-desc">A ${p.category} fragrance built around ${p.notes.middle.toLowerCase()}, opening with ${p.notes.top.toLowerCase()} and settling into a warm base of ${p.notes.base.toLowerCase()}. Long-lasting and instantly recognizable.</p>
+      <p class="pd-desc">${pdDescription}</p>
 
       <div class="pd-qty-label">Quantity</div>
       <div class="qty-control">
@@ -180,11 +191,13 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
           </div>
         </div>
         <div class="pd-tab-panel" id="tab-notes">
+          ${notesComplete ? `
           <div class="pd-notes-grid">
             <div class="pd-note-card"><i class="fa-solid fa-lemon"></i><h5>Top Notes</h5><p>${p.notes.top}</p></div>
             <div class="pd-note-card"><i class="fa-solid fa-gem"></i><h5>Heart Notes</h5><p>${p.notes.middle}</p></div>
             <div class="pd-note-card"><i class="fa-solid fa-tree"></i><h5>Base Notes</h5><p>${p.notes.base}</p></div>
           </div>
+          ` : `<p style="color:var(--ink-soft); font-size:14px;">Fragrance notes haven't been added for this product yet.</p>`}
         </div>
         <div class="pd-tab-panel" id="tab-shipping">
           <p style="color:var(--ink-soft); font-size:14px; line-height:1.7;">Orders ship within 1-2 business days and arrive in 2-4 business days. Every fragrance is inspected for authenticity before dispatch. Items can be returned within 14 days of delivery in original packaging for a full refund.</p>
