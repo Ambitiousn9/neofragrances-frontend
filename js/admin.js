@@ -275,6 +275,15 @@ function openProductModal(id = null) {
     form.pstock.value = p.stockQty ?? 0;
     form.pbadge.value = p.badge || "";
     form.pimage.value = p.image;
+    form.pdescription.value = p.description || "";
+    // Notes come from p.notes.{top,middle,base} on the shared PRODUCTS
+    // objects. The "—" placeholder was what the old hardcoded payload
+    // used to send for every product — treat it as empty so it doesn't
+    // get carried forward into the edit form as if it were real text.
+    const notes = p.notes || {};
+    form.ptopnotes.value = (notes.top && notes.top !== "—") ? notes.top : "";
+    form.pmiddlenotes.value = (notes.middle && notes.middle !== "—") ? notes.middle : "";
+    form.pbasenotes.value = (notes.base && notes.base !== "—") ? notes.base : "";
   } else {
     title.textContent = "Add Product";
     delete form.dataset.editId;
@@ -303,9 +312,10 @@ async function handleProductFormSubmit(e) {
     stock_qty: Number(form.pstock.value) || 0,
     badge: form.pbadge.value || null,
     image: form.pimage.value.trim() || "images/perfumes/placeholder.jpg",
-    top_notes: "—",
-    middle_notes: "—",
-    base_notes: "—",
+    description: form.pdescription.value.trim() || null,
+    top_notes: form.ptopnotes.value.trim() || null,
+    middle_notes: form.pmiddlenotes.value.trim() || null,
+    base_notes: form.pbasenotes.value.trim() || null,
   };
 
   try {
