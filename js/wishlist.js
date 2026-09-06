@@ -28,6 +28,13 @@ function refreshWishlistIcons() {
   document.querySelectorAll(".wishlist-btn").forEach(btn => {
     const id = Number(btn.dataset.id);
     const icon = btn.querySelector("i");
+    // Some elements (e.g. the product page's Share button) reuse the
+    // .wishlist-btn class purely for matching styles but aren't actual
+    // wishlist toggles — they have no <i> icon and no data-id. Skip
+    // them instead of crashing, which used to silently stop every
+    // script that ran after this one on the page.
+    if (!icon || !btn.dataset.id) return;
+
     if (WISHLIST_IDS.has(id)) {
       icon.classList.remove("fa-regular");
       icon.classList.add("fa-solid");
