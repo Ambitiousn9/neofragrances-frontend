@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Special Offers — NeoFragrances</title>
+<meta name="description" content="Exclusive deals on your favorite fragrances. Discover discounted, promotional, and limited-time perfumes at NeoFragrances.">
+<meta property="og:title" content="Special Offers — NeoFragrances">
+<meta property="og:description" content="Exclusive deals on your favorite fragrances — limited time, while stocks last.">
+<meta property="og:image" content="https://neofragrances.netlify.app/images/logo/logo.png">
+<meta property="og:url" content="https://neofragrances.netlify.app/special-offers.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="images/logo/logo.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/mobile-drawer.css">
+</head>
+<body>
+
+<header class="site-header">
+<div class="container navbar">
+<a href="index.html" class="logo"><img src="images/logo/logo.png" alt="NeoFragrances" style="height:50px; width:auto;"></a>
+<ul class="nav-links">
+<li><a href="index.html">Home</a></li>
+<li><a href="products.html">Products</a></li>
+<li><a href="special-offers.html">Special Offers</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="contact.html">Contact</a></li>
+<li class="mobile-account-item"><a href="login.html"><i class="fa-regular fa-user"></i> &nbsp;Login / Register</a></li>
+<li class="mobile-account-item"><a href="wishlist.html"><i class="fa-regular fa-heart"></i> &nbsp;Wishlist</a></li>
+<li class="mobile-account-item"><a href="my-orders.html"><i class="fa-solid fa-receipt"></i> &nbsp;My Orders</a></li>
+</ul>
+<div class="nav-icons">
+<a href="login.html" title="Login / Register" class="icon-secondary"><i class="fa-regular fa-user"></i></a>
+<a href="wishlist.html" title="Wishlist" class="icon-secondary"><i class="fa-regular fa-heart"></i></a>
+<a href="my-orders.html" title="My Orders" class="icon-secondary"><i class="fa-solid fa-receipt"></i></a>
+<a href="cart.html" title="Cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-count">0</span></a>
+<button class="nav-toggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+</div>
+</div>
+</header>
+
+<!-- Hero -->
+<section class="offers-hero" style="padding-bottom:0;">
+  <div class="container">
+    <span class="eyebrow">Exclusive Offers</span>
+    <h1 class="section-title" data-aos="fade-up">Special Offers</h1>
+    <p class="section-sub">Discover selected fragrances at special prices — limited time, while stocks last.</p>
+    <div class="offers-hero-ctas">
+      <a href="#offers-grid" class="btn btn-primary">Shop Offers</a>
+      <a href="products.html" class="btn btn-outline">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- No offers running at all -->
+<section id="no-offers-banner" style="display:none; padding-top:0;">
+  <div class="container">
+    <div class="admin-empty" style="border:1px solid var(--line); border-radius:16px; background:var(--white);">
+      <i class="fa-regular fa-clock" style="font-size:22px; color:var(--gold); margin-bottom:10px; display:block;"></i>
+      No special offers are running right now — check back soon, or browse the full collection.
+      <div style="margin-top:16px;"><a href="products.html" class="btn btn-outline btn-sm">Browse Products</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured flash sale -->
+<section style="padding-top:0; padding-bottom:0;">
+  <div class="container">
+    <div id="featured-offer-wrap"></div>
+  </div>
+</section>
+
+<!-- Filter chips + grid -->
+<section style="padding-top:40px;">
+  <div class="container">
+    <h2 class="section-title" style="font-size:26px; margin-bottom:20px;">All Offers</h2>
+    <div class="chip-row" id="offer-chips"></div>
+
+    <div class="product-grid" id="offers-grid"></div>
+    <p id="offers-empty-state" style="display:none; color:var(--ink-soft); padding:30px 0;">No offers match this filter right now.</p>
+
+    <div class="trust-strip">
+      <div class="trust-item">
+        <div class="trust-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div><strong>100% Authentic</strong><span>Guaranteed original products</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon"><i class="fa-solid fa-lock"></i></div>
+        <div><strong>Secure Payment</strong><span>Pay safely via Paystack</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon"><i class="fa-solid fa-truck"></i></div>
+        <div><strong>Fast Delivery</strong><span>3–5 business days</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon"><i class="fa-solid fa-rotate-left"></i></div>
+        <div><strong>Easy Returns</strong><span>30-day return policy</span></div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:50px;">
+      <p style="color:var(--ink-soft); margin-bottom:16px;">Don't miss out on these limited-time prices.</p>
+      <a href="#offers-grid" class="btn btn-primary">Shop Special Offers</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+<div class="container footer-grid">
+<div>
+<a href="index.html" class="logo">Neo<span>Fragrances</span></a>
+<p>Authentic luxury fragrances, from timeless classics to modern masterpieces.</p>
+<div class="social-row">
+<a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+<a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+<a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+</div>
+</div>
+<div class="footer-col">
+<h5>Shop</h5>
+<a href="products.html">All Products</a>
+<a href="special-offers.html">Special Offers</a>
+<a href="products.html?category=men">Men's</a>
+<a href="products.html?category=women">Women's</a>
+</div>
+<div class="footer-col">
+<h5>Company</h5>
+<a href="about.html">About Us</a>
+<a href="contact.html">Contact</a>
+<a href="login.html">Login</a>
+<a href="track-order.html">Track Order</a>
+</div>
+<div class="footer-col">
+<h5>Contact</h5>
+<a href="tel:0597015869">0597 015 869</a>
+<a href="mailto:hello@neofragrances.com">hello@neofragrances.com</a>
+</div>
+</div>
+<div class="container footer-bottom">
+<span>&copy; 2026 NeoFragrances. All rights reserved.</span>
+<span>We offer perfection in fragrances</span>
+</div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/wishlist.js"></script>
+<script src="js/offers.js"></script>
+<script src="js/mobile-drawer.js"></script>
+</body>
+</html>
