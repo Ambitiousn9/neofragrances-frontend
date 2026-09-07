@@ -37,7 +37,7 @@ function mnavBuildMarkup() {
           <a href="index.html" class="mnav-link" data-page="index.html"><i class="fa-solid fa-house"></i> Home</a>
           <a href="products.html" class="mnav-link" data-page="products.html"><i class="fa-solid fa-flask"></i> Products</a>
           <a href="products.html" class="mnav-link"><i class="fa-solid fa-border-all"></i> Categories</a>
-          <a href="products.html" class="mnav-link">
+          <a href="special-offers.html" class="mnav-link" data-page="special-offers.html">
             <i class="fa-solid fa-tag"></i> Special Offers
             <span class="mnav-badge-new">New</span>
           </a>
