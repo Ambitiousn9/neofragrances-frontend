@@ -1053,6 +1053,11 @@ select:focus, .filter-select:focus {
   border-radius: 20px;
   overflow: hidden;
   color: var(--white);
+  animation: offerCardEnter 0.5s ease both;
+}
+@keyframes offerCardEnter {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .featured-offer-media {
   background: linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
@@ -1075,7 +1080,18 @@ select:focus, .filter-select:focus {
 .featured-offer-prices .offer-price-original { color: rgba(255,255,255,0.55); }
 .featured-offer-prices .offer-price-sale { color: var(--white); font-size: 26px; }
 .featured-offer-prices .offer-save-badge { background: var(--gold); color: var(--ink); }
-.featured-offer-cta { align-self: flex-start; margin-top: 22px; }
+.featured-offer-cta {
+  align-self: flex-start;
+  margin-top: 22px;
+  position: relative;
+}
+.featured-offer-cta::after {
+  content: "→";
+  margin-left: 8px;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+.featured-offer-cta:hover::after { transform: translateX(3px); }
 
 .offer-card .product-media { position: relative; }
 
@@ -1092,10 +1108,65 @@ select:focus, .filter-select:focus {
 @media (max-width: 640px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .offers-hero-ctas .btn { flex: 1; }
+
+  /* ---------- Featured Flash Sale — premium mobile layout ----------
+     .featured-offer-info becomes invisible to layout so its children
+     (badge, title, description, product name, prices, countdown, CTA)
+     become flex items alongside the image, letting us set a custom
+     visual order without touching offers.js or any data hooks. */
+  .featured-offer-banner {
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    box-shadow: 0 14px 34px rgba(43,27,46,0.22);
+  }
+  .featured-offer-info { display: contents; }
+
+  .featured-offer-eyebrow { order: 1; margin: 22px 20px 0; }
+  .featured-offer-info h2 { order: 2; margin: 0 20px 8px; font-size: 22px; line-height: 1.25; }
+  .featured-offer-desc { order: 3; margin: 0 20px 18px; font-size: 13px; line-height: 1.6; max-width: none; }
+
+  .featured-offer-media {
+    order: 4;
+    min-height: 0;
+    padding: 18px 20px 22px;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 70%);
+  }
+  .featured-offer-media img {
+    max-height: 180px;
+    filter: drop-shadow(0 16px 24px rgba(0,0,0,0.35));
+    transition: transform 0.35s ease;
+  }
+  .featured-offer-banner:active .featured-offer-media img { transform: scale(0.97); }
+
+  .featured-offer-product { order: 5; margin: 0 20px 10px; font-size: 13px; text-align: center; }
+  .featured-offer-prices { order: 6; justify-content: center; margin: 0 20px 16px; }
+  .featured-offer-prices .offer-price-sale { font-size: 24px; }
+  .offer-ends-label { order: 7; justify-content: center; margin: 0 20px 10px; }
+  .offer-countdown { order: 8; justify-content: center; margin: 0 20px 20px; }
+  .featured-offer-cta {
+    order: 9;
+    align-self: stretch;
+    margin: 0 20px 24px;
+    justify-content: center;
+  }
 }
 @media (max-width: 380px) {
   .product-grid { gap: 10px; }
   .cd-unit { min-width: 38px; padding: 5px 6px; }
   .cd-unit span { font-size: 15px; }
   .featured-offer-info { padding: 20px 16px; }
+  .featured-offer-eyebrow,
+  .featured-offer-info h2,
+  .featured-offer-desc,
+  .featured-offer-product,
+  .featured-offer-prices,
+  .offer-ends-label,
+  .offer-countdown,
+  .featured-offer-cta {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
 }
+
