@@ -1,5 +1,5 @@
 /* ============================================
-   NeoFragrances — main.js (Phase 4)
+   NeoFragrances — main.js (Phase 4 + clickable cards)
    Products now load from the real database via
    the Express API, instead of being hardcoded.
 
@@ -7,6 +7,15 @@
    after the fetch below finishes. Any script that
    needs PRODUCTS must wait for the "productsReady"
    event instead of assuming it's ready immediately.
+
+   NEW: the entire .product-card is clickable and
+   opens product-details.html for that product,
+   while .wishlist-btn, .add-to-cart, and
+   .view-details-link keep working independently
+   (handled via one delegated listener below —
+   applies automatically to every page that uses
+   productCard(), since it's the single shared
+   template for all of them).
    ============================================ */
 
 const API_BASE = "https://neofragrances-server.onrender.com";
@@ -63,18 +72,16 @@ function handleImageError(img) {
   img.replaceWith(wrapper.firstElementChild);
 }
 
-
 function money(amount) {
   return `GH₵${Number(amount).toFixed(2)}`;
 }
 
-
 function productCard(p) {
   return `
-  <div class="product-card" data-id="${p.id}" data-name="${p.name.toLowerCase()}" data-brand="${p.brand}" data-cat="${p.category}" data-price="${p.price}">
+  <div class="product-card" data-id="${p.id}" data-name="${p.name.toLowerCase()}" data-brand="${p.brand}" data-cat="${p.category}" data-price="${p.price}" tabindex="0" role="link" aria-label="View details for ${p.name}">
     <div class="product-media">
       ${p.badge ? `<span class="product-badge${p.badge === 'New' ? ' badge-new' : ''}">${p.badge}</span>` : ""}
-      <button class="wishlist-btn" data-id="${p.id}" onclick="toggleWishlist(${p.id}, this)" title="Save to wishlist"><i class="fa-regular fa-heart"></i></button>
+      <button class="wishlist-btn" data-id="${p.id}" onclick="toggleWishlist(${p.id}, this)" title="Save to wishlist" aria-label="Save ${p.name} to wishlist"><i class="fa-regular fa-heart"></i></button>
       ${productMedia(p.image, p.name)}
     </div>
     <div class="product-info">
@@ -107,9 +114,44 @@ function skeletonGrid(count = 8) {
   }
   return html;
 }
+
+/* ---------- Whole-card navigation to product details ----------
+   Single delegated listener, so this works for every product card
+   on every page (products.html, homepage, wishlist.html, related-
+   products grids), no matter which script rendered it, and works
+   for cards added dynamically after this script runs. */
+function navigateToProductFromCard(card) {
+  const id = card.dataset.id;
+  if (!id) return;
+  window.location.href = `product-details.html?id=${id}`;
+}
+
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".product-card");
+  if (!card) return;
+
+  // Let these keep handling themselves — do not navigate for them.
+  if (e.target.closest(".wishlist-btn")) return;
+  if (e.target.closest(".add-to-cart")) return;
+  if (e.target.closest(".view-details-link")) return; // its own href already goes to the right place
+
+  navigateToProductFromCard(card);
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const card = e.target.closest(".product-card");
+  if (!card) return;
+  // Only trigger card-level navigation when the card itself has focus —
+  // if a button/link inside it has focus, let that element's own
+  // Enter/Space behavior run instead (native button/link activation).
+  if (e.target !== card) return;
+  e.preventDefault();
+  navigateToProductFromCard(card);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
-
 
   if (window.AOS) {
     AOS.init({ duration: 700, once: true, offset: 60 });
