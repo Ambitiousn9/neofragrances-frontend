@@ -97,7 +97,7 @@
 document.getElementById("pd-content").innerHTML =
   `<p style="grid-column:1/-1; color:var(--ink-soft); padding:40px 0;">Loading product...</p>`;
 
-document.addEventListener("productsReady", (e) => {
+document.addEventListener("productsReady", async (e) => {
   if (!e.detail.success || PRODUCTS.length === 0) {
     document.getElementById("pd-content").innerHTML =
       `<p style="grid-column:1/-1; color:var(--wine); padding:40px 0;">Couldn't load this product — make sure the backend server (node server.js) is running.</p>`;
@@ -107,6 +107,22 @@ document.addEventListener("productsReady", (e) => {
   const params = new URLSearchParams(window.location.search);
   const id = Number(params.get("id")) || PRODUCTS[0].id;
   const p = PRODUCTS.find(pr => pr.id === id) || PRODUCTS[0];
+
+  // FIX: check for a currently-active Special Offer on this exact
+  // product, using the same public endpoint the Special Offers page
+  // already uses — this is what was missing. Without this, "Shop Now"
+  // from the offers page always landed here showing (and adding to
+  // cart at) the regular price, regardless of any active discount.
+  let activeOffer = null;
+  try {
+    const offersRes = await fetch(`${API_BASE}/api/offers/active`);
+    if (offersRes.ok) {
+      const offers = await offersRes.json();
+      activeOffer = offers.find(o => o.product_id === p.id) || null;
+    }
+  } catch (err) {
+    console.error("Could not check for an active offer on this product:", err);
+  }
 
   document.title = `${p.name} — NeoFragrances`;
 const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
@@ -131,6 +147,27 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
      <span style="text-transform:capitalize;">${p.category}</span> &nbsp;›&nbsp;
      <span style="color:var(--ink);">${p.name}</span>`;
 
+  // Reuses the same offer-price-row / offer-price-original /
+  // offer-save-badge classes as the Special Offers page and the cart —
+  // one consistent look, no new CSS.
+  const priceRowHTML = activeOffer
+    ? `
+      <div class="pd-price-stock-row">
+        <div>
+          <div class="offer-price-row" style="margin-bottom:4px;">
+            <span class="offer-price-original">${money(activeOffer.original_price)}</span>
+            <span class="offer-save-badge">SAVE ${activeOffer.discount_percent}%</span>
+          </div>
+          <div class="pd-price">${money(activeOffer.sale_price)}</div>
+        </div>
+        <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In Stock' : 'Out of Stock'}</span>
+      </div>`
+    : `
+      <div class="pd-price-stock-row">
+        <div class="pd-price">${money(p.price)}</div>
+        <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In Stock' : 'Out of Stock'}</span>
+      </div>`;
+
   document.getElementById("pd-content").innerHTML = `
     <div>
       <div class="pd-gallery-main">${productMedia(p.image, p.name)}</div>
@@ -148,10 +185,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
           : `<span class="pd-rating-text">No reviews yet</span>`}
       </div>
 
-      <div class="pd-price-stock-row">
-                <div class="pd-price">${money(p.price)}</div>
-        <span class="${p.stock ? 'stock-yes' : 'stock-no'}">${p.stock ? 'In Stock' : 'Out of Stock'}</span>
-      </div>
+      ${priceRowHTML}
 
       <p class="pd-desc">${pdDescription}</p>
 
@@ -215,10 +249,10 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
     });
   });
 
-    document.getElementById("sticky-price").textContent = money(p.price);
+    document.getElementById("sticky-price").textContent = money(activeOffer ? activeOffer.sale_price : p.price);
   document.getElementById("sticky-add-cart").disabled = !p.stock;
   document.getElementById("sticky-add-cart").addEventListener("click", () => {
-    addToCart(p.id, qty);
+    addToCart(p.id, qty, activeOffer ? activeOffer.id : null);
     const stickyBtn = document.getElementById("sticky-add-cart");
     stickyBtn.innerHTML = "Added ✓";
     setTimeout(() => (stickyBtn.innerHTML = `<i class="fa-solid fa-bag-shopping"></i>&nbsp; Add to Cart`), 1200);
@@ -239,7 +273,7 @@ const concMatch = p.name.match(/\b(EDP|EDT|EDC)\b/i);
     qty = Math.max(1, qty - 1); document.getElementById("qty-value").textContent = qty;
   });
     document.getElementById("pd-add-cart").addEventListener("click", (e) => {
-  addToCart(p.id, qty);
+  addToCart(p.id, qty, activeOffer ? activeOffer.id : null);
   e.target.textContent = "Added ✓";
   setTimeout(() => (e.target.innerHTML = `<i class="fa-solid fa-bag-shopping"></i>&nbsp; Add to Cart`), 1200);
   if (typeof showToast === "function") showToast("Added to cart");
