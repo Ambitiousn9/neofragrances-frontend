@@ -1,13 +1,28 @@
 /* ============================================
-   NeoFragrances — cart.js (redesigned cart UI, patched)
+   NeoFragrances — cart.js (offer-pricing fix)
    Cart items still live in localStorage (same as
    before — real per-account carts remain a future
    phase). Product details come from PRODUCTS,
    populated after "productsReady" fires.
 
-   PATCH: all prices now render via money() from
-   main.js (GH₵), matching what Paystack actually
-   charges. Was previously hardcoded to "$".
+   FIX: cart lines now carry an optional offerId,
+   and the cart cross-checks it against the same
+   public /api/offers/active endpoint the Special
+   Offers page already uses — so the price shown
+   here matches what checkout/payment will validate
+   server-side. The backend is still the ONLY
+   authority on what actually gets charged; this is
+   purely for a consistent, honest display before
+   the customer pays.
+
+   Because the same product can now be in the cart
+   twice (once at regular price, once under an
+   offer), cart lines are identified by the
+   (productId, offerId) PAIR, not productId alone —
+   addToCart/removeFromCart/updateQty all take an
+   optional trailing offerId (defaults to null, so
+   every existing call site with just a productId
+   still works unchanged).
 
    All existing endpoints/behavior preserved:
    - /api/coupons/validate
@@ -20,6 +35,36 @@
 const CART_KEY = "neofragrances_cart";
 let APPLIED_COUPON = null;
 let COUPON_LOADING = false;
+
+// Active offers, keyed by offer id — used only to resolve display
+// pricing for cart lines that were added under an offer. Refreshed
+// whenever the cart page loads, so it reflects the current live state
+// (an offer may have expired or been disabled since the item was added).
+let ACTIVE_OFFERS_BY_ID = {};
+
+async function loadActiveOffersForCart() {
+  try {
+    const res = await fetch(`${API_BASE}/api/offers/active`);
+    if (!res.ok) return;
+    const offers = await res.json();
+    ACTIVE_OFFERS_BY_ID = {};
+    offers.forEach(o => { ACTIVE_OFFERS_BY_ID[o.id] = o; });
+  } catch (err) {
+    console.error("Could not load active offers for cart pricing:", err);
+  }
+}
+
+// Resolves what a cart line should show right now: sale price if its
+// offerId still points at a currently-active offer for this product,
+// otherwise the product's regular price. This mirrors (but does not
+// replace) the server's own re-validation at checkout time.
+function resolveCartItemPricing(item, product) {
+  const offer = item.offerId ? ACTIVE_OFFERS_BY_ID[item.offerId] : null;
+  if (offer && offer.product_id === product.id) {
+    return { unitPrice: Number(offer.sale_price), originalPrice: Number(offer.original_price), offer };
+  }
+  return { unitPrice: product.price, originalPrice: null, offer: null };
+}
 
 async function applyCoupon() {
   const input = document.getElementById("coupon-input");
@@ -80,24 +125,24 @@ function saveCart(cart) {
   updateCartCount();
 }
 
-function addToCart(productId, qty = 1) {
+function addToCart(productId, qty = 1, offerId = null) {
   const cart = getCart();
-  const existing = cart.find(item => item.id === productId);
+  const existing = cart.find(item => item.id === productId && (item.offerId || null) === (offerId || null));
   if (existing) {
     existing.qty += qty;
   } else {
-    cart.push({ id: productId, qty });
+    cart.push({ id: productId, qty, offerId: offerId || null });
   }
   saveCart(cart);
 }
 
-function removeFromCart(productId) {
-  saveCart(getCart().filter(item => item.id !== productId));
+function removeFromCart(productId, offerId = null) {
+  saveCart(getCart().filter(item => !(item.id === productId && (item.offerId || null) === (offerId || null))));
 }
 
-function updateQty(productId, qty) {
+function updateQty(productId, qty, offerId = null) {
   const cart = getCart();
-  const item = cart.find(i => i.id === productId);
+  const item = cart.find(i => i.id === productId && (i.offerId || null) === (offerId || null));
   if (item) {
     item.qty = Math.max(1, qty);
     saveCart(cart);
@@ -117,7 +162,8 @@ function updateCartCount() {
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".add-to-cart");
   if (!btn || btn.disabled) return;
-  addToCart(Number(btn.dataset.id));
+  const offerId = btn.dataset.offerId ? Number(btn.dataset.offerId) : null;
+  addToCart(Number(btn.dataset.id), 1, offerId);
   btn.textContent = "Added ✓";
   setTimeout(() => (btn.textContent = "Add to Cart"), 1200);
   if (typeof showToast === "function") showToast("Added to cart");
@@ -127,13 +173,29 @@ document.addEventListener("click", (e) => {
 function cartItemCardHTML(p, item) {
   const atMax = item.qty >= (p.stockQty ?? 999);
   const atMin = item.qty <= 1;
+  const { unitPrice, originalPrice, offer } = resolveCartItemPricing(item, p);
+  const lineTotal = unitPrice * item.qty;
+
+  // Reuses the exact same classes offers.js already renders with on the
+  // Special Offers page (offer-price-row / offer-price-original /
+  // offer-save-badge) — no new CSS needed, guaranteed same look.
+  const priceBlock = offer
+    ? `
+      <div class="offer-price-row">
+        <span class="offer-price-original">${money(originalPrice)}</span>
+        <span class="offer-save-badge">SAVE ${offer.discount_percent}%</span>
+      </div>
+      <div class="product-price">${money(lineTotal)}</div>
+    `
+    : `<div class="product-price">${money(lineTotal)}</div>`;
+
   return `
-  <div class="cart-item-card" data-id="${p.id}">
+  <div class="cart-item-card" data-id="${p.id}" data-offer-id="${item.offerId || ""}">
     <div class="cart-item-media">${productMedia(p.image, p.name)}</div>
     <div class="cart-item-info">
       <span class="product-brand">${p.brand}</span>
       <div class="product-name">${p.name}</div>
-      <div class="product-price">${money(p.price * item.qty)}</div>
+      ${priceBlock}
     </div>
     <div class="cart-item-qty">
       <div class="qty-control-v2">
@@ -180,31 +242,34 @@ function renderCartPage() {
 
   const total = cart.reduce((sum, item) => {
     const p = PRODUCTS.find(pr => pr.id === item.id);
-    return sum + (p ? p.price * item.qty : 0);
+    if (!p) return sum;
+    const { unitPrice } = resolveCartItemPricing(item, p);
+    return sum + unitPrice * item.qty;
   }, 0);
   renderSummary(total);
   renderPromoAppliedWrap();
 
   list.querySelectorAll(".cart-item-card").forEach(row => {
     const id = Number(row.dataset.id);
+    const offerId = row.dataset.offerId ? Number(row.dataset.offerId) : null;
     const product = PRODUCTS.find(pr => pr.id === id);
 
     row.querySelector(".qty-plus").addEventListener("click", () => {
-      const item = getCart().find(i => i.id === id);
+      const item = getCart().find(i => i.id === id && (i.offerId || null) === (offerId || null));
       const max = product?.stockQty ?? 999;
       if (item.qty >= max) return;
-      updateQty(id, item.qty + 1);
+      updateQty(id, item.qty + 1, offerId);
       renderCartPage();
     });
     row.querySelector(".qty-minus").addEventListener("click", () => {
-      const item = getCart().find(i => i.id === id);
+      const item = getCart().find(i => i.id === id && (i.offerId || null) === (offerId || null));
       if (item.qty <= 1) return; // button is disabled at 1; guard anyway
-      updateQty(id, item.qty - 1);
+      updateQty(id, item.qty - 1, offerId);
       renderCartPage();
     });
     row.querySelector(".remove-link-v2").addEventListener("click", () => {
       if (!confirm(`Remove ${product ? product.name : "this item"} from your cart?`)) return;
-      removeFromCart(id);
+      removeFromCart(id, offerId);
       if (typeof showToast === "function") showToast("Item removed");
       renderCartPage();
     });
@@ -303,13 +368,26 @@ async function handleCheckout() {
         "Authorization": `Bearer ${auth.token}`,
       },
       body: JSON.stringify({
-        items: cart.map(i => ({ productId: i.id, qty: i.qty })),
+        items: cart.map(i => ({ productId: i.id, qty: i.qty, offerId: i.offerId || null })),
         addressId: typeof SELECTED_ADDRESS_ID !== "undefined" ? SELECTED_ADDRESS_ID : null,
         couponId: APPLIED_COUPON ? APPLIED_COUPON.id : null,
       }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Could not start payment.");
+
+    if (!res.ok) {
+      if (data.priceChanged) {
+        // A special offer expired/changed since it was added — refresh
+        // pricing and let the customer see the corrected total before
+        // trying again, rather than silently charging something else.
+        if (typeof showToast === "function") showToast(data.error, "error");
+        await loadActiveOffersForCart();
+        renderCartPage();
+        btns.forEach(b => { b.disabled = false; b.innerHTML = b.dataset.originalText; });
+        return;
+      }
+      throw new Error(data.error || "Could not start payment.");
+    }
 
     window.location.href = data.authorizationUrl;
   } catch (err) {
@@ -331,12 +409,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-document.addEventListener("productsReady", (e) => {
+document.addEventListener("productsReady", async (e) => {
   if (!document.getElementById("cart-list")) return;
   if (!e.detail.success) {
     document.getElementById("cart-list").innerHTML =
       `<p style="color:var(--wine); padding:40px 0;">We're having trouble loading your cart right now — please try refreshing in a moment.</p>`;
     return;
   }
+  await loadActiveOffersForCart();
   renderCartPage();
 });
