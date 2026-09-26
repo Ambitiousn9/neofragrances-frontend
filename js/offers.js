@@ -6,6 +6,11 @@
    nothing is hardcoded. The Admin Portal is the
    source of truth; this file only renders what the
    API returns.
+
+   FIX: the Add to Cart button on each offer card now
+   carries data-offer-id, so cart.js's global click
+   handler knows which offer this add came from and
+   the cart/checkout can price it correctly.
    ============================================ */
 
 let OFFERS = [];
@@ -133,7 +138,7 @@ function offerCardHTML(offer) {
       </div>
     </div>
     <div class="product-actions">
-      <button class="btn btn-primary add-to-cart" data-id="${offer.product_id}" ${stock ? "" : "disabled"} aria-label="Add ${offer.product_name} to cart"><i class="fa-solid fa-bag-shopping"></i>&nbsp; Add to Cart</button>
+      <button class="btn btn-primary add-to-cart" data-id="${offer.product_id}" data-offer-id="${offer.id}" ${stock ? "" : "disabled"} aria-label="Add ${offer.product_name} to cart"><i class="fa-solid fa-bag-shopping"></i>&nbsp; Add to Cart</button>
       <a href="product-details.html?id=${offer.product_id}" class="view-details-link">View details <i class="fa-solid fa-chevron-right"></i></a>
     </div>
   </div>`;
