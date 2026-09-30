@@ -21,29 +21,34 @@
 const API_BASE = "https://neofragrances-server.onrender.com";
 let PRODUCTS = [];
 
+// Extracted so the paginated products.html catalog fetch (search.js)
+// can map its rows exactly the same way as this full-catalog load —
+// zero drift between the two, and zero behavior change here.
+function mapProductRow(p) {
+  return {
+    id: p.id,
+    name: p.name,
+    brand: p.brand,
+    category: p.category,
+    price: Number(p.price),
+    stock: p.stock_qty > 0,
+    stockQty: p.stock_qty,
+    badge: p.badge || "",
+    image: p.image,
+    avgRating: Number(p.avg_rating) || 0,
+    reviewCount: p.review_count || 0,
+    notes: { top: p.top_notes, middle: p.middle_notes, base: p.base_notes },
+  };
+}
+
 async function loadProducts() {
+  let fetchSucceeded = false;
   try {
     const res = await fetch(`${API_BASE}/api/products`);
     if (!res.ok) throw new Error(`Server responded with ${res.status}`);
     const data = await res.json();
-
-    // Convert the database's column names/shapes into the same shape
-    // the rest of the site's code already expects.
-    PRODUCTS = data.map(p => ({
-      id: p.id,
-      name: p.name,
-      brand: p.brand,
-      category: p.category,
-      price: Number(p.price),
-      stock: p.stock_qty > 0,
-      stockQty: p.stock_qty,
-      badge: p.badge || "",
-      image: p.image,
-      avgRating: Number(p.avg_rating) || 0,
-      reviewCount: p.review_count || 0,
-      description: p.description || "",
-      notes: { top: p.top_notes, middle: p.middle_notes, base: p.base_notes },
-    }));
+    PRODUCTS = data.map(mapProductRow);
+    fetchSucceeded = true;
   } catch (err) {
     console.error("Could not load products from the API:", err);
     PRODUCTS = [];
