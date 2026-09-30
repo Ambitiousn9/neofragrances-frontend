@@ -973,8 +973,19 @@ select:focus, .filter-select:focus {
    product-card, trust-strip patterns above.
    ============================================ */
 
-.offers-hero { padding-top: 60px; }
-.offers-hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
+.offers-hero-ctas .btn-primary {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 15px;
+    border-radius: 999px;
+  }
+  .offers-hero-ctas .btn-outline {
+    width: 100%;
+    padding: 15px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 999px;
+  }
 
 /* Sale pricing, reused on both the featured banner and offer cards */
 .offer-price-original {
@@ -1107,7 +1118,25 @@ select:focus, .filter-select:focus {
 }
 @media (max-width: 640px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .offers-hero-ctas .btn { flex: 1; }
+    .offers-hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+  .offers-hero-ctas .btn-primary {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+  .offers-hero-ctas .btn-outline {
+    width: 100%;
+    padding: 11px 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
 
   /* ---------- Featured Flash Sale — premium mobile layout ----------
      .featured-offer-info becomes invisible to layout so its children
